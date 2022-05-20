@@ -19,11 +19,15 @@ const getUser = (req, res) => {
       res.status(200).send(user);
     })
     .catch(err => {
+      if (err.name === 'ValidationError') {
+        return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания пользователя!' });
+      }
+    /* .catch(err => {
       console.log('findById err -> ', err)
       if (err.kind === 'ObjectID') {
         return res.status(ValidationError).send({ message: 'Неправильный Id пользователя' });
       }
-
+ */
       res.status(DefaultError).send({ message: 'Server error' });
     });
   // console.log("typeof id ->", typeof id);
