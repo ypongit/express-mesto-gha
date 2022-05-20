@@ -15,11 +15,13 @@ const getUser = (req, res) => {
         return res.status(NotFoundError).send({ message: 'пользователь не найден' });
       }
 
+      // console.log('res.status ->', res.status)
       res.status(200).send(user);
     })
     .catch(err => {
+      console.log('findById err -> ', err)
       if (err.kind === 'ObjectID') {
-        return res.status(NotFoundError).send({ message: 'Неправильный Id пользователя' });
+        return res.status(ValidationError).send({ message: 'Неправильный Id пользователя' });
       }
 
       res.status(DefaultError).send({ message: 'Server error' });
@@ -71,7 +73,7 @@ const profileUpdate = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about}, {
     new: true, // обработчик then получит на вход обновлённую запись
   })
-    .then(user => res.send({ data: user }))
+    .then(user => res.status(200). send({ data: user }))
     .catch(err => res.status(DefaultError).send({ message: 'Server error' }));
 };
 
