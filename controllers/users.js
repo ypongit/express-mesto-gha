@@ -5,6 +5,7 @@ const User = require('../models/User');
 const ValidationError = 400;
 const NotFoundError = 404;
 const DefaultError = 500;
+const _id = require('../app')
 
 const getUser = (req, res) => {
   const id = req.params.id;
@@ -74,18 +75,18 @@ const getUsers = (_, res) => {
 };
 
 const profileUpdate = (req, res) => {
-  /* req.user = {
+/*   req.user = {
     _id: '6284e5caf459e18331bf63ad',
   }; */
-
+  console.log('profileUpdate -> req', req.user)
   User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about}, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true,
   })
     .then(user => {
-      /* if (!user){
+      if (!user){
         return res.status(NotFoundError).send({ message: 'пользователь не найден' });
-      } */
+      }
       // console.log({ name: user.name,  about: user.about});
       // const {name, about} = user;
       res.status(200).send({ user });
@@ -103,7 +104,8 @@ const avatarUpdate = (req, res) => {
   /* req.user = {
     _id: '6284e5caf459e18331bf63ad',
   }; */
-  const { name, about, avatar } = req.body;
+  console.log('avatarUpdate -> req', req.user)
+  const { avatar } = req.body;
   if (!avatar) {
     return res.status(400).send({message: ' некорректные данные!'})
   }
