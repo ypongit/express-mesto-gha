@@ -88,7 +88,7 @@ const profileUpdate = (req, res) => {
       // console.log({ name: user.name,  about: user.about});
       // console.log({ "name": user.name, "about": user.about });
       // const {name, about} = user;
-      res.status(200).send({ user });
+      res.status(200).send({name: user.name, about: user.about });
     })
     .catch(err => {
       console.log('profileUpdate err ->', err);
