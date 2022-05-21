@@ -23,6 +23,8 @@ app.get('/', (req, res) => {
   res.status(200).send('<h1>Здесь могла быть ваша реклама!</h1>');
 });
 
+app.use('*', (req, res) => res.status(404).send({ message: 'Запрашиваемая страница не найдена' }));
+
 /* app.use('/cards', (req, res, next) => {
   req.user = {
     // вставьте сюда _id созданного в предыдущем пункте пользователя
