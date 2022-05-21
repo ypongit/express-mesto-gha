@@ -86,7 +86,6 @@ const profileUpdate = (req, res) => {
         return res.status(NotFoundError).send({ message: 'пользователь не найден' });
       } */
       // console.log({ name: user.name,  about: user.about});
-      // console.log({ "name": user.name, "about": user.about });
       // const {name, about} = user;
       res.status(200).send({ user });
     })
@@ -102,17 +101,21 @@ const profileUpdate = (req, res) => {
 const avatarUpdate = (req, res) => {
   req.user = {
     _id: '6284e5caf459e18331bf63ad',
-    runValidators: true,
   };
   User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar}, {
     new: true, // обработчик then получит на вход обновлённую запись
+    runValidators: true,
   })
     .then(user => {
-      console.log({ data: user.avatar })
+      console.log({ avatar: user.avatar })
       // const {avatar} = user;
       res.status(200).send({ user })
     })
-    .catch(err => res.status(DefaultError).send({ message: 'Server error' }));
+    .catch(err => {
+      console.log(err);
+      return res.status(DefaultError).send({ message: 'Server error' });
+      }
+      );
 };
 
 module.exports = {
