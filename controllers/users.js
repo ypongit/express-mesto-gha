@@ -22,12 +22,15 @@ const getUser = (req, res) => {
        if (err.name === 'ValidationError') {
         return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания пользователя!' });
       } */
-    .catch(err => {
+    /* .catch(err => {
       console.log('findById err -> ', err)
       if (err.kind === 'ObjectID') {
         return res.status(ValidationError).send({ message: 'Неправильный Id пользователя' });
-      }
-
+      } */
+      .catch ((err) => {
+        if (err.name === 'CastError') {
+          return res.status(ValidationError).send({ message: 'передан некорректный id в метод удаления карточки!' });
+        }
       return res.status(DefaultError).send({ message: 'Server error' });
     });
   // console.log("typeof id ->", typeof id);
