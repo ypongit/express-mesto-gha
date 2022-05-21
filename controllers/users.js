@@ -74,9 +74,10 @@ const getUsers = (_, res) => {
 };
 
 const profileUpdate = (req, res) => {
-  req.user = {
+  /* req.user = {
     _id: '6284e5caf459e18331bf63ad',
-  };
+  }; */
+
   User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about}, {
     new: true, // обработчик then получит на вход обновлённую запись
     runValidators: true,
@@ -99,9 +100,9 @@ const profileUpdate = (req, res) => {
 };
 
 const avatarUpdate = (req, res) => {
-  req.user = {
+  /* req.user = {
     _id: '6284e5caf459e18331bf63ad',
-  };
+  }; */
   const { name, about, avatar } = req.body;
   if (!avatar) {
     return res.status(400).send({message: ' некорректные данные!'})
