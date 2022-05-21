@@ -64,7 +64,8 @@ const likeCard = (req, res) => {
     _id: '6284e5caf459e18331bf63ad',
   };
   // console.log('req.params', req.params);
-  Card.findByIdAndUpdate(req.params.cardId,
+  Card.findByIdAndUpdate(
+    req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
