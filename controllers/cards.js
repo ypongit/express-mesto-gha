@@ -76,11 +76,15 @@ const likeCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(ValidationError).send({ message: 'передан некорректный id в метод лайка карточки!' });
+      console.log("likeCard -> ", err)
+      if (err.kind == 'ObjectId') {
+        return res.status(ValidationError).send({ message: 'Некореектные данные для установки лайка' });
       }
+      /* if (err.name === 'CastError') {
+        return res.status(ValidationError).send({ message: 'передан некорректный id в метод лайка карточки!' });
+      } */
+      return res.status(DefaultError).send({ message: 'Server error' });
     });
-  return res.status(DefaultError).send({ message: 'Server error' });
 };
 
 const dislikeCard = (req, res) => {
