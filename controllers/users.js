@@ -86,7 +86,7 @@ const profileUpdate = (req, res) => {
         return res.status(NotFoundError).send({ message: 'пользователь не найден' });
       } */
       // console.log({ name: user.name,  about: user.about});
-      console.log({ "name": user.name, "about": user.about });
+      // console.log({ "name": user.name, "about": user.about });
       res.status(200).send({ "name": user.name, "about": user.about });
     })
     .catch(err => {
