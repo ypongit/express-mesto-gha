@@ -29,7 +29,7 @@ const getUser = (req, res) => {
       } */
       .catch ((err) => {
         if (err.name === 'CastError') {
-          return res.status(ValidationError).send({ message: 'передан некорректный id в метод удаления карточки!' });
+          return res.status(ValidationError).send({ message: 'передан некорректный id в метод поиска пользователя!' });
         }
       return res.status(DefaultError).send({ message: 'Server error' });
     });
@@ -80,8 +80,13 @@ const profileUpdate = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about}, {
     new: true, // обработчик then получит на вход обновлённую запись
   })
-    .then(user => res.status(200). send({ data: user }))
-    .catch(err => res.status(DefaultError).send({ message: 'Server error' }));
+    .then(user => res.status(200).send({ data: user }))
+    .catch(err => {
+      if (err.name === 'CastError') {
+        return res.status(ValidationError).send({ message: 'передан некорректный id в метод удаления карточки!' });
+      }
+    })
+    return res.status(DefaultError).send({ message: 'Server error' });
 };
 
 const avatarUpdate = (req, res) => {
