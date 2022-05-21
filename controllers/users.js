@@ -79,24 +79,34 @@ const profileUpdate = (req, res) => {
   };
   User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about}, {
     new: true, // обработчик then получит на вход обновлённую запись
+    runValidators: true,
   })
-    .then(user => res.status(200).send({ data: user }))
-    .catch(err => {
-      if (err.name === 'CastError') {
-        return res.status(ValidationError).send({ message: 'передан некорректный id в метод удаления карточки!' });
-      }
+    .then(user => {
+      /* if (!user){
+        return res.status(NotFoundError).send({ message: 'пользователь не найден' });
+      } */
+      console.log({ data: user });
+      res.status(200).send({ data: user });
     })
-    return res.status(DefaultError).send({ message: 'Server error' });
+    .catch(err => {
+      console.log('profileUpdate err ->', err);
+      if (err.name === 'ValidationError') {
+        return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы обновления пользователя' });
+      }
+      return res.status(DefaultError).send({ message: 'Server error' });
+    })
+
 };
 
 const avatarUpdate = (req, res) => {
   req.user = {
     _id: '6284e5caf459e18331bf63ad',
+    runValidators: true,
   };
   User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar}, {
     new: true, // обработчик then получит на вход обновлённую запись
   })
-    .then(user => res.send({ data: user }))
+    .then(user => res.status(200).send({ data: user }))
     .catch(err => res.status(DefaultError).send({ message: 'Server error' }));
 };
 
