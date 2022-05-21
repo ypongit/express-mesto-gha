@@ -94,7 +94,7 @@ const profileUpdate = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы обновления пользователя' });
       }
-      return res.status(DefaultError).send({ message: 'Server error' });
+      // return res.status(DefaultError).send({ message: 'Server error' });
     })
 };
 
