@@ -87,8 +87,8 @@ const profileUpdate = (req, res) => {
       } */
       // console.log({ name: user.name,  about: user.about});
       // console.log({ "name": user.name, "about": user.about });
-      const {name, about} = user;
-      res.status(200).send({name, about});
+      // const {name, about} = user;
+      res.status(200).send({ user });
     })
     .catch(err => {
       console.log('profileUpdate err ->', err);
@@ -109,7 +109,8 @@ const avatarUpdate = (req, res) => {
   })
     .then(user => {
       console.log({ data: user.avatar })
-      res.status(200).send({ avatar: user.avatar })
+      // const {avatar} = user;
+      res.status(200).send({ user })
     })
     .catch(err => res.status(DefaultError).send({ message: 'Server error' }));
 };
