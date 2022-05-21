@@ -2,17 +2,9 @@
   "env": {
     "es2021": "true"
   },
-  "extends": [
-    "plugin:vue/essential",
-    "airbnb-base"
-  ],
-  "parserOptions": {
-    "ecmaVersion": "latest"
-  },
-  "plugins": [
-    "vue"
-  ],
+  "extends": "airbnb-base",
+
   "rules": {
-    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }]
   }
 }
