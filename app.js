@@ -1,9 +1,6 @@
 
 const express = require('express');
-// const path = require('path');
-// const fs = require('fs').promises;
 const mongoose = require('mongoose');
-// const users = require('./data.json');
 const { userRouter } = require('./routes/users');
 const { cardsRouter } = require('./routes/cards');
 const Card = require('./models/Card');
@@ -26,11 +23,6 @@ app.use(express.json());
 app.use('/cards', cardsRouter);
 
 app.use('/users', userRouter);
-
-app.get('/', (req, res) => {
-  // console.log('Да пребудет с вами сила!');
-  res.status(200).send('<h1>Здесь могла быть ваша реклама!</h1>');
-});
 
 app.use('*', (req, res) => res.status(404).send({ message: 'Запрашиваемая страница не найдена' }));
 

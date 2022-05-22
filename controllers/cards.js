@@ -1,12 +1,17 @@
-const path = require('path');
-const fs = require('fs').promises;
 const Card = require('../models/Card');
-const ValidationError = 400; // переданы некорректные данные в методы создания карточки,
+/* const ValidationError = 400; // переданы некорректные данные в методы создания карточки,
 // пользователя, обновления аватара пользователя или профиля;
 const NotFoundError = 404; // карточка или пользователь не найден.
-const DefaultError = 500; // ошибка по-умолчанию.
+const DefaultError = 500; // ошибка по-умолчанию. */
+
+const {
+  ValidationError,
+  NotFoundError,
+  DefaultError,
+} = require('../errors/errors');
 
 const getCards = (_, res) => {
+  console.log('Errors:', DefaultError);
   Card.find({})
     .then(cards => {
       res.status(200).send({ cards });
@@ -17,14 +22,11 @@ const getCards = (_, res) => {
 };
 
 const createCard = (req, res) => {
-  req.user = {
-    _id: '6284e5caf459e18331bf63ad', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
   const owner = req.user._id;
   const { name, link } = req.body;
 
   if (!name || !link) {
-    return res.status(400).send({ message: 'переданы некорректные данные в методы создания карточки' });
+    return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания карточки' });
   }
 
   Card.create({ name, link, owner })
@@ -60,10 +62,6 @@ const removeCard = (req, res) => {
 };
 
 const likeCard = (req, res) => {
-  req.user = {
-    _id: '6284e5caf459e18331bf63ad',
-  };
-  // console.log('req.params', req.params);
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -80,17 +78,11 @@ const likeCard = (req, res) => {
       if (err.kind == 'ObjectId') {
         return res.status(ValidationError).send({ message: 'Некореектные данные для установки лайка' });
       }
-      /* if (err.name === 'CastError') {
-        return res.status(ValidationError).send({ message: 'передан некорректный id в метод лайка карточки!' });
-      } */
       return res.status(DefaultError).send({ message: 'Server error' });
     });
 };
 
 const dislikeCard = (req, res) => {
-  req.user = {
-    _id: '6284e5caf459e18331bf63ad',
-  };
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -106,6 +98,7 @@ const dislikeCard = (req, res) => {
       if (err.name === 'CastError') {
         return res.status(ValidationError).send({ message: 'передан некорректный id в метод дизлайка карточки!' });
       }
+      return res.status(DefaultError).send({ message: 'Server error' });
     });
 };
 
