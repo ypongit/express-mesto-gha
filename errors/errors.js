@@ -3,4 +3,4 @@ const ValidationError = 400; // переданы некорректные дан
 const NotFoundError = 404; // карточка или пользователь не найден.
 const DefaultError = 500; // ошибка по-умолчанию.
 
-module.exports = { ValidationError, NotFoundError, DefaultError }
+module.exports = { ValidationError, NotFoundError, DefaultError };

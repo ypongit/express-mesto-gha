@@ -11,9 +11,8 @@ const {
 } = require('../errors/errors');
 
 const getCards = (_, res) => {
-  console.log('Errors:', DefaultError);
   Card.find({})
-    .then(cards => {
+    .then((cards) => {
       res.status(200).send({ cards });
     })
     .catch(() => {
@@ -21,6 +20,7 @@ const getCards = (_, res) => {
     });
 };
 
+// eslint-disable-next-line consistent-return
 const createCard = (req, res) => {
   const owner = req.user._id;
   const { name, link } = req.body;
@@ -30,29 +30,28 @@ const createCard = (req, res) => {
   }
 
   Card.create({ name, link, owner })
-    .then(card => {
+    .then((card) => {
       res.status(201).send(card);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания карточки' });
       }
       return res.status(DefaultError).send({ message: 'Server error' });
-      // console.log('err ->', err);
     });
 };
 
 const removeCard = (req, res) => {
   // console.log('removeCard req.params -> ', req.params);
   Card.findByIdAndRemove(req.params.cardId)
-    .then(card => {
+    .then((card) => {
       if (!card) {
         return res.status(NotFoundError).send({ message: 'карточка не найдена' });
       }
 
       return res.send({ data: card });
     })
-    .catch ((err) => {
+    .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(ValidationError).send({ message: 'передан некорректный id в метод удаления карточки!' });
       }
@@ -67,15 +66,15 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then(card => {
+    // eslint-disable-next-line consistent-return
+    .then((card) => {
       if (!card) {
         return res.status(NotFoundError).send({ message: 'карточка не найдена' });
       }
       res.status(200).send(card);
     })
     .catch((err) => {
-      console.log("likeCard -> ", err)
-      if (err.kind == 'ObjectId') {
+      if (err.kind === 'ObjectId') {
         return res.status(ValidationError).send({ message: 'Некореектные данные для установки лайка' });
       }
       return res.status(DefaultError).send({ message: 'Server error' });
@@ -88,7 +87,8 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then(card => {
+    // eslint-disable-next-line consistent-return
+    .then((card) => {
       if (!card) {
         return res.status(NotFoundError).send({ message: 'карточка не найдена' });
       }
