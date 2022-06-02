@@ -1,53 +1,157 @@
+const bcrypt = require('bcrypt');
+const { use } = require('bcrypt/promises');
 const User = require('../models/User');
+const { generateToken } = require('../middlewares/auth');
+const jwt = require('jsonwebtoken');
 
-/* const ValidationError = 400;
-const NotFoundError = 404;
-const DefaultError = 500; */
+const MONGO_DUPLICATE_KEY_CODE = 11000;
+const saltRound = 10;
+
+const JWT_SECRET_KEY = '1234567890';
 const {
-  ValidationError,
-  NotFoundError,
-  DefaultError,
+  ValidationError, // 400
+  NotFoundError, // 404
+  DefaultError, // 500
 } = require('../errors/errors');
+//  const req = require('express/lib/request');
 
 const getUser = (req, res) => {
+  // const auth = req.headers.authorization;
   const { id } = req.params;
-
-  User.findById(id)
-    // eslint-disable-next-line consistent-return
+  return User.findById(id)
     .then((user) => {
+      // console.log('user: ', user);
       if (!user) {
         return res.status(NotFoundError).send({ message: 'пользователь не найден' });
       }
-      res.status(200).send(user);
+
+      return res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(ValidationError).send({ message: 'передан некорректный id в метод поиска пользователя!' });
-      }
-      return res.status(DefaultError).send({ message: 'Server error' });
+      res.status(DefaultError).send(err);
     });
 };
 
 // eslint-disable-next-line consistent-return
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  if (!name || !about || !avatar) {
-    return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания пользователя' });
+// централизованная обработка ошибок через next
+const createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  if (!email || !password) {
+    const err = new Error('Не передан емейл или пароль');
+    err.statusCode = NotFoundError;
+    next(err);
+    return;
+    /* return res.status(ValidationError)
+      .send({ message: 'Не передан емейл или пароль.' }); */
   }
 
-  User.create({ name, about, avatar })
-    .then((user) => {
-      res.status(201).send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания пользователя!' });
-      }
-      return res.status(DefaultError).send({ message: 'Server error' });
+  bcrypt.hash(password, saltRound)
+    .then((hash) => {
+      User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+        .then(() => {
+          res.status(200).send({ message: 'Пользователь создан.' });
+        })
+        .catch((err) => {
+          // console.log('DuplicateError ->', err);
+          if (err.code === MONGO_DUPLICATE_KEY_CODE) {
+            const DuplicateError = new Error('Такой емейл занят!');
+            DuplicateError.statusCode = 409;
+            return next(DuplicateError);
+            // return res.status(DuplicateError).send({ message: 'Такой емейл занят!' });
+          }
+          next(err);
+          // return res.status(DefaultError).send({ message: 'Server error' });
+        });
     });
 };
 
-const getUsers = (_, res) => {
+
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      // аутентификация успешна! пользователь в переменной user
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '7d' });
+
+      res.send({ token });
+    })
+  /* User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      return bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        // хеши не совпали — отклоняем промис
+        return Promise.reject(new Error('Неправильные почта и пароль'));
+      }
+      // аутентификация успешна
+      res.send({ message: 'Все верно!' });
+    }) */
+    .catch(() => {
+      next(new Error('Неправильные почта или пароль'));
+    });
+};
+
+/* const login = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      // console.log(user);
+
+      if (!user) {
+        // пользователь с такой почтой не найден
+        throw new Error('not_found');
+        // return res.status(ValidationError).send({ message: 'Email или пароль неверный' });
+      }
+      // пользователь найден
+      // сравниваем переданный пароль и хеш из базы
+       return {
+        isPasswordValid: bcrypt.compare(password, user.password),
+        user,
+      };
+    })
+
+    .then(({ isPasswordValid, user }) => {
+      if (!isPasswordValid) {
+        return res.status(ValidationError)
+          .send({ message: 'Email или пароль не верные!' });
+      }
+      // console.log('user', user);
+      return generateToken({ _id: user._id });
+      // return jwt.sign({ _id: user._id }, JWT_SECRET_KEY);
+    })
+    // eslint-disable-next-line arrow-body-style
+    .then((token) => {
+      // console.log('token ->', token);
+      return res.status(200).send({ token });
+    })
+    .catch((err) => {
+      // console.log(err);
+      if (err.message === 'not_found') {
+        return res.status(ValidationError).send({ message: 'Email или пароль не верны!' });
+      }
+
+      return res.status(DefaultError).send({ message: 'Server error' });
+    });
+
+}; */
+
+const getUsers = (req, res) => {
+  console.log('req.user', req.user);
   User.find({})
     .then((users) => {
       res.status(200).send(users);
@@ -77,6 +181,21 @@ const profileUpdate = (req, res) => {
     });
 };
 
+// контроллер для получения информации о пользователе. Роут: get('/me', getProfile);
+const getProfile = (req, res) => {
+  console.log('_id: req.user-> ', { _id: req.user });
+
+  User.findOne({ _id: req.user._id })
+    .then((user) => {
+      if (!user) {
+        return res.status(NotFoundError)
+          .send({ message: 'Пользователь с данным _id не найден!' });
+      }
+      res.status(200).send(user);
+    })
+    .catch((err) => res.status(DefaultError).send(err));
+};
+
 // eslint-disable-next-line consistent-return
 const avatarUpdate = (req, res) => {
   const { avatar } = req.body;
@@ -103,4 +222,6 @@ module.exports = {
   getUsers,
   profileUpdate,
   avatarUpdate,
+  login,
+  getProfile,
 };

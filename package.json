@@ -27,7 +27,10 @@
     "nodemon": "^2.0.16"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "express": "^4.18.1",
-    "mongoose": "^6.3.3"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.3.3",
+    "validator": "^13.7.0"
   }
 }

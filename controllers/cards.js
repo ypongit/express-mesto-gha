@@ -8,6 +8,7 @@ const {
   ValidationError,
   NotFoundError,
   DefaultError,
+  Forbidden,
 } = require('../errors/errors');
 
 const getCards = (_, res) => {
@@ -24,6 +25,7 @@ const getCards = (_, res) => {
 const createCard = (req, res) => {
   const owner = req.user._id;
   const { name, link } = req.body;
+  console.log('name:', name )
 
   if (!name || !link) {
     return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания карточки' });
@@ -48,7 +50,9 @@ const removeCard = (req, res) => {
       if (!card) {
         return res.status(NotFoundError).send({ message: 'карточка не найдена' });
       }
-
+      if (String(card.owner) !== req.user._id) {
+        return res.status(Forbidden).send({ message: 'Невозможно удалить чужую карточку' });
+      }
       return res.send({ data: card });
     })
     .catch((err) => {
