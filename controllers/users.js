@@ -6,6 +6,7 @@ const User = require('../models/User');
 const NotFoundError = require('../errors/not-found-err');
 const DuplicateError = require('../errors/duplicate-err');
 const ValidationError = require('../errors/validation-err');
+const AuthentificationError = require('../errors/authentication-err');
 
 const MONGO_DUPLICATE_KEY_CODE = 11000;
 const saltRound = 10;
@@ -69,7 +70,7 @@ const createUser = (req, res, next) => {
           } */
           if (/* err.name === 'MongoServerError'  && */ err.code === MONGO_DUPLICATE_KEY_CODE) {
             throw new DuplicateError('Пользователь с таким email уже существует!');
-            //  return res.status(409).send({ message: 'Такой емейл занят!' });
+            // return res.status(409).send({ message: 'Такой емейл занят!' });
           }
           next(err);
           // return res.status(DefaultError).send({ message: 'Server error' });
@@ -89,7 +90,7 @@ const login = (req, res, next) => {
       res.status(200).send({ token });
     })
     .catch(() => {
-      next(new Error('Неправильные почта или пароль'));
+      next(new AuthentificationError('Неправильные почта или пароль'));
     });
 };
 
