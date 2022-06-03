@@ -4,7 +4,6 @@ const Card = require('../models/Card');
 const NotFoundError = 404; // карточка или пользователь не найден.
 const DefaultError = 500; // ошибка по-умолчанию. */
 const NotFoundError = require('../errors/not-found-err');
-const DuplicateError = require('../errors/duplicate-err');
 const ValidationError = require('../errors/validation-err');
 const ForbiddenError = require('../errors/forbidden-err');
 /* const {
@@ -29,7 +28,7 @@ const createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   /* if (!name || !link) {
-    return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания карточки' });
+    return res.status(ValidationError).send({ message: 'переданы некорректные данные в карточки' });
   } */
   Card.create({ name, link, owner })
     .then((card) => {
@@ -38,7 +37,7 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new ValidationError('Переданы некорректные данные в методы создания карточки');
-        // return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы создания карточки' });
+        // return res.status(ValidationError).send({ message: 'некорректные данные карточки' });
       }
     })
     .catch(next);
@@ -77,7 +76,7 @@ const likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         throw new ValidationError('Переданы некорректные данные в методы установки лайка');
-        // return res.status(ValidationError).send({ message: 'Некореектные данные для установки лайка' });
+        // return res.status(ValidationError).send({ message: 'Некорректные данные лайка' });
       }
       next(err);
     })

@@ -1,4 +1,4 @@
-const req = require('express/lib/request');
+// const req = require('express/lib/request');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const isEmail = require('validator/lib/isEmail');
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    validator(v) {
+    validator() {
       return /^https?:\/\/(w{3}\.)?[\w]*\.ru\/[-._~:/?#[]@!$&'()*\+,;=]*#?$/;
     },
     message: 'Неверный URL',

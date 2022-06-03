@@ -1,11 +1,8 @@
 const jwt = require('jsonwebtoken');
+
 const JWT_SECRET_KEY = '1234567890';
-const User = require('../models/User');
+// const User = require('../models/User');
 const {
-  ValidationError, // 400
-  NotFoundError, // 404
-  DefaultError, // 500
-  DuplicateError, // 409
   AuthError, // 401
 } = require('../errors/errors');
 
@@ -31,9 +28,9 @@ const verifyToken = (token) => {
     });
 }; */
 
+// eslint-disable-next-line consistent-return
 const isAuthorized = (req, res, next) => {
   const auth = req.headers.authorization;
-  console.log('auth ->', auth);
   if (!auth || !auth.startsWith('Bearer ')) {
     return res
       .status(AuthError)
@@ -41,11 +38,9 @@ const isAuthorized = (req, res, next) => {
   }
 
   const token = auth.replace('Bearer ', '');
-  console.log('token ->', token);
   let decoded;
   try {
     decoded = jwt.verify(token, JWT_SECRET_KEY);
-    console.log('decoded -> ', decoded);
   } catch (err) {
     return res
       .status(AuthError)
@@ -65,4 +60,5 @@ const isAuthorized = (req, res, next) => {
     })
     .catch(() => res.status(DefaultError).send({ message: 'Server error.' })); */
 };
-module.exports = { isAuthorized/*,  generateToken */};
+
+module.exports = { isAuthorized/* ,  generateToken */ };

@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { use } = require('bcrypt/promises');
+// const { use } = require('bcrypt/promises');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 // const { generateToken } = require('../middlewares/auth');
@@ -82,7 +82,6 @@ const login = (req, res, next) => {
 };
 
 const getUsers = (req, res, next) => {
-  console.log('req.user', req.user);
   User.find({})
     .then((users) => {
       res.status(200).send(users);
@@ -106,7 +105,8 @@ const profileUpdate = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         throw new ValidationError('переданы некорректные данные в методы обновления пользователя');
-        // return res.status(ValidationError).send({ message: 'переданы некорректные данные в методы обновления пользователя' });
+        // return res.status(ValidationError)
+        // .send({ message: 'переданы некорректные данные в методы обновления пользователя' });
       }
       // return res.status(DefaultError).send({ message: 'Server error' });
     })

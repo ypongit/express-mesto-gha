@@ -1,6 +1,9 @@
+/* eslint-disable consistent-return */
 const express = require('express');
 const mongoose = require('mongoose');
 // const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
 const { userRouter } = require('./routes/users');
 const { cardsRouter } = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
@@ -9,8 +12,6 @@ const { PORT = 3000 } = process.env;
 const app = express();
 mongoose.connect('mongodb://localhost:27017/mestodb');
 const { isAuthorized } = require('./middlewares/auth');
-const { celebrate, Joi } = require('celebrate');
-const { errors } = require('celebrate');
 
 /* app.use((req, _, next) => {
   req.user = {
@@ -19,7 +20,7 @@ const { errors } = require('celebrate');
   };
 
   next();
-});*/
+}); */
 
 app.use(express.json());
 
@@ -48,7 +49,9 @@ app.post('/signup', celebrate({
 app.use(errors()); // обработчик ошибок celebrate
 app.use('*', (req, res) => res.status(404).send({ message: 'Запрашиваемая страница не найдена' }));
 // мидлвэр для централизованной обработки ошибок
-app.use((err, req, res, next) => {
+
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, _next) => {
   if (err.statusCode) {
     return res.status(err.statusCode).send({ message: err.message || 'Что-то пошло не так' });
   }
