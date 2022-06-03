@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validator(v) {
+      return /^https?:\/\/(w{3}\.)?[\w]*\.ru\/[-._~:/?#[]@!$&'()*\+,;=]*#?$/;
+    },
+    message: 'Неверный URL',
   },
   email: {
     type: String,
