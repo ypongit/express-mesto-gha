@@ -50,16 +50,16 @@ const createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        // eslint-disable-next-line arrow-body-style
         .then((user) => {
-          return res.status(200).send({
-            _id: user._id,
-            email: user.email,
+          console.log(user);
+          res.status(200).send({
             name: user.name,
             about: user.ubout,
+            email: user.email,
             avatar: user.avatar,
-          }); // { message: 'Пользователь создан.' }
+          });
         })
+
         .catch((err) => {
           // console.log('DuplicateError ->', err);
           if (err.name === 'ValidationError') {
