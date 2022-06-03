@@ -42,7 +42,7 @@ const createUser = (req, res, next) => {
       .send({ message: 'Не передан емейл или пароль.' });
   } */
 
-  bcrypt.hash(password, saltRound)
+  return bcrypt.hash(password, saltRound)
     .then((hash) => {
       User.create({
         name,
@@ -63,11 +63,6 @@ const createUser = (req, res, next) => {
 
         // eslint-disable-next-line consistent-return
         .catch((err) => {
-          // console.log('Error ->', err);
-          /* if (err.name === 'ValidationError') {
-            throw new ValidationError('Переданы некорректные данные
-            в методы создания пользователя');
-          } */
           if (/* err.name === 'MongoServerError'  && */ err.code === MONGO_DUPLICATE_KEY_CODE) {
             throw new DuplicateError('Пользователь с таким email уже существует!');
             // return res.status(409).send({ message: 'Такой емейл занят!' });
