@@ -1,11 +1,10 @@
-/* eslint-disable quote-props */
 const bcrypt = require('bcrypt');
 // const { use } = require('bcrypt/promises');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 // const { generateToken } = require('../middlewares/auth');
 const NotFoundError = require('../errors/not-found-err');
-const DuplicateError = require('../errors/duplicate-err');
+// const DuplicateError = require('../errors/duplicate-err');
 const ValidationError = require('../errors/validation-err');
 
 const MONGO_DUPLICATE_KEY_CODE = 11000;
@@ -54,21 +53,22 @@ const createUser = (req, res, next) => {
         .then((user) => {
           // console.log(user);
           res.status(201).send({
-            'name': user.name,
-            'about': user.about,
-            'avatar': user.avatar,
-            'email': user.email,
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
           });
         })
 
+        // eslint-disable-next-line consistent-return
         .catch((err) => {
-          // console.log('DuplicateError ->', err);
+          console.log('Error ->', err);
           if (err.name === 'ValidationError') {
             throw new ValidationError('Переданы некорректные данные в методы создания пользователя');
           }
-          if (err.name === 'MongoError' && err.code === MONGO_DUPLICATE_KEY_CODE) {
-            throw new DuplicateError('Пользователь с таким email уже существует!');
-            // return res.status(DuplicateError).send({ message: 'Такой емейл занят!' });
+          if (err.name === 'MongoServerError' && err.code === MONGO_DUPLICATE_KEY_CODE) {
+            // throw new DuplicateError('Пользователь с таким email уже существует!');
+            return res.status(409).send({ message: 'Такой емейл занят!' });
           }
           // next(err);
           // return res.status(DefaultError).send({ message: 'Server error' });
