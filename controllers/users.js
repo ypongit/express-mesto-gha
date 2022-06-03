@@ -51,10 +51,19 @@ const createUser = (req, res, next) => {
         password: hash,
       })
         .then((user) => {
-          res.status(200).send(user); // { message: 'Пользователь создан.' }
+          res.status(200).send({
+            _id: user._id,
+            email: user.email,
+            name: user.name,
+            about: user.ubout,
+            avatar: user.avatar,
+          }); // { message: 'Пользователь создан.' }
         })
         .catch((err) => {
           // console.log('DuplicateError ->', err);
+          if (err.name === 'ValidationError') {
+            throw new ValidationError('Переданы некорректные данные в методы создания пользователя');
+          }
           if (err.code === MONGO_DUPLICATE_KEY_CODE) {
             throw new DuplicateError('Пользователь с таким email уже существует!');
             // return res.status(DuplicateError).send({ message: 'Такой емейл занят!' });
