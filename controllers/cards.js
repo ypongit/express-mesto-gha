@@ -52,7 +52,8 @@ const removeCard = (req, res, next) => {
         // return res.status(NotFoundError).send({ message: 'карточка не найдена' });
       }
       if (String(card.owner) !== req.user._id) {
-        throw new ForbiddenError('Чужую карточку удалить низя!');
+        // throw new ForbiddenError('Чужую карточку удалить низя!');
+        return res.status(403).send({ message: 'карточка не найдена' });
       }
       return res.send({ data: card });
     })

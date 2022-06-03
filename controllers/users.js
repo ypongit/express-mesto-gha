@@ -51,12 +51,12 @@ const createUser = (req, res, next) => {
         password: hash,
       })
         .then((user) => {
-          console.log(user);
-          res.status(200).send({
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            email: user.email,
+          // console.log(user);
+          res.status(201).send({
+            "name": user.name,
+            "about": user.about,
+            "avatar": user.avatar,
+            "email": user.email,
           });
         })
 
@@ -84,7 +84,7 @@ const login = (req, res, next) => {
       // аутентификация успешна! пользователь в переменной user
       const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, { expiresIn: '7d' });
 
-      res.send({ token });
+      res.status(200).send({ token });
     })
     .catch(() => {
       next(new Error('Неправильные почта или пароль'));
