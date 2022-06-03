@@ -42,37 +42,33 @@ const createUser = (req, res, next) => {
       .send({ message: 'Не передан емейл или пароль.' });
   } */
 
-  return bcrypt.hash(password, saltRound)
-    .then((hash) => {
-      User.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      })
-        .then((user) => {
-          // console.log(user);
-          res.send({
-            data: {
-              name: user.name,
-              about: user.about,
-              avatar: user.avatar,
-              email: user.email,
-            },
-          });
-        })
-
-        // eslint-disable-next-line consistent-return
-        .catch((err) => {
-          if (/* err.name === 'MongoServerError'  && */ err.code === MONGO_DUPLICATE_KEY_CODE) {
-            throw new DuplicateError('Пользователь с таким email уже существует!');
-            // return res.status(409).send({ message: 'Такой емейл занят!' });
-          }
-          next(err);
-          // return res.status(DefaultError).send({ message: 'Server error' });
-        });
+  bcrypt.hash(password, saltRound)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
     })
+      .then((user) => {
+        // console.log(user);
+        res.status(201).send({
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        });
+      })
+
+      // eslint-disable-next-line consistent-return
+      .catch((err) => {
+        if (/* err.name === 'MongoServerError'  && */ err.code === MONGO_DUPLICATE_KEY_CODE) {
+          throw new DuplicateError('Пользователь с таким email уже существует!');
+          // return res.status(409).send({ message: 'Такой емейл занят!' });
+        }
+        next(err);
+        // return res.status(DefaultError).send({ message: 'Server error' });
+      }))
     .catch(next);
 };
 
