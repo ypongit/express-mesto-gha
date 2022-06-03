@@ -65,7 +65,7 @@ const createUser = (req, res, next) => {
           if (err.name === 'ValidationError') {
             throw new ValidationError('Переданы некорректные данные в методы создания пользователя');
           }
-          if (err.code === MONGO_DUPLICATE_KEY_CODE) {
+          if (err.name === 'MongoError' && err.code === MONGO_DUPLICATE_KEY_CODE) {
             throw new DuplicateError('Пользователь с таким email уже существует!');
             // return res.status(DuplicateError).send({ message: 'Такой емейл занят!' });
           }
