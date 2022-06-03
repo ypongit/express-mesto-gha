@@ -50,8 +50,8 @@ const createUser = (req, res, next) => {
         email,
         password: hash,
       })
-        .then(() => {
-          res.status(200).send({ message: 'Пользователь создан.' });
+        .then((user) => {
+          res.status(200).send(user); // { message: 'Пользователь создан.' }
         })
         .catch((err) => {
           // console.log('DuplicateError ->', err);
