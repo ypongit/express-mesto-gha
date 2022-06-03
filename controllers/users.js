@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 // const { generateToken } = require('../middlewares/auth');
 const NotFoundError = require('../errors/not-found-err');
-// const DuplicateError = require('../errors/duplicate-err');
+const DuplicateError = require('../errors/duplicate-err');
 const ValidationError = require('../errors/validation-err');
 
 const MONGO_DUPLICATE_KEY_CODE = 11000;
@@ -35,11 +35,11 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!email || !password) {
+  /* if (!email || !password) {
     throw new NotFoundError('Не передан емейл или пароль!');
-    /* return res.status(ValidationError)
-      .send({ message: 'Не передан емейл или пароль.' }); */
-  }
+     return res.status(ValidationError)
+      .send({ message: 'Не передан емейл или пароль.' });
+  } */
 
   bcrypt.hash(password, saltRound)
     .then((hash) => {
@@ -52,7 +52,7 @@ const createUser = (req, res, next) => {
       })
         .then((user) => {
           // console.log(user);
-          res.status(201).send({
+          res.status(200).send({
             name: user.name,
             about: user.about,
             avatar: user.avatar,
@@ -62,15 +62,16 @@ const createUser = (req, res, next) => {
 
         // eslint-disable-next-line consistent-return
         .catch((err) => {
-          console.log('Error ->', err);
-          if (err.name === 'ValidationError') {
-            throw new ValidationError('Переданы некорректные данные в методы создания пользователя');
+          // console.log('Error ->', err);
+          /* if (err.name === 'ValidationError') {
+            throw new ValidationError('Переданы некорректные данные
+            в методы создания пользователя');
+          } */
+          if (/* err.name === 'MongoServerError'  && */ err.code === MONGO_DUPLICATE_KEY_CODE) {
+            throw new DuplicateError('Пользователь с таким email уже существует!');
+            //  return res.status(409).send({ message: 'Такой емейл занят!' });
           }
-          if (err.name === 'MongoServerError' && err.code === MONGO_DUPLICATE_KEY_CODE) {
-            // throw new DuplicateError('Пользователь с таким email уже существует!');
-            return res.status(409).send({ message: 'Такой емейл занят!' });
-          }
-          // next(err);
+          next(err);
           // return res.status(DefaultError).send({ message: 'Server error' });
         });
     })
