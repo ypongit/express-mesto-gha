@@ -50,8 +50,9 @@ const createUser = (req, res, next) => {
         email,
         password: hash,
       })
+        // eslint-disable-next-line arrow-body-style
         .then((user) => {
-          res.status(200).send({
+          return res.status(200).send({
             _id: user._id,
             email: user.email,
             name: user.name,
