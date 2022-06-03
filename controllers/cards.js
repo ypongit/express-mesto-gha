@@ -5,7 +5,7 @@ const NotFoundError = 404; // карточка или пользователь �
 const DefaultError = 500; // ошибка по-умолчанию. */
 const NotFoundError = require('../errors/not-found-err');
 const ValidationError = require('../errors/validation-err');
-const ForbiddenError = require('../errors/forbidden-err');
+// const ForbiddenError = require('../errors/forbidden-err');
 /* const {
   ValidationError,
   NotFoundError,

@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 const bcrypt = require('bcrypt');
 // const { use } = require('bcrypt/promises');
 const jwt = require('jsonwebtoken');
@@ -53,10 +54,10 @@ const createUser = (req, res, next) => {
         .then((user) => {
           // console.log(user);
           res.status(201).send({
-            "name": user.name,
-            "about": user.about,
-            "avatar": user.avatar,
-            "email": user.email,
+            'name': user.name,
+            'about': user.about,
+            'avatar': user.avatar,
+            'email': user.email,
           });
         })
 
