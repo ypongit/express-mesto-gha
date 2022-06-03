@@ -54,9 +54,9 @@ const createUser = (req, res, next) => {
           console.log(user);
           res.status(200).send({
             name: user.name,
-            about: user.ubout,
-            email: user.email,
+            about: user.about,
             avatar: user.avatar,
+            email: user.email,
           });
         })
 
