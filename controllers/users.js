@@ -54,10 +54,12 @@ const createUser = (req, res, next) => {
         .then((user) => {
           // console.log(user);
           res.status(200).send({
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            email: user.email,
+            data: {
+              name: user.name,
+              about: user.about,
+              avatar: user.avatar,
+              email: user.email,
+            },
           });
         })
 
