@@ -14,10 +14,10 @@ const saltRound = 10;
 const JWT_SECRET_KEY = '1234567890';
 //  const req = require('express/lib/request');
 
-const getUser = (req, res, next) => {
+const getUserById = (req, res, next) => {
   // const auth = req.headers.authorization;
-  const { id } = req.params;
-  return User.findById(id)
+  const { userId } = req.params;
+  return User.findById(userId)
     .then((user) => {
       // console.log('user: ', user);
       if (!user) {
@@ -52,7 +52,7 @@ const createUser = (req, res, next) => {
     })
       .then((user) => {
         // console.log(user);
-        res.status(201).send({
+        res.status(200).send({
           name: user.name,
           about: user.about,
           avatar: user.avatar,
@@ -90,7 +90,7 @@ const login = (req, res, next) => {
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
-      res.status(200).send(users);
+      res.status(200).send({ users });
     })
     .catch(next);
 };
@@ -130,7 +130,7 @@ const getProfile = (req, res, next) => {
         /* return res.status(NotFoundError)
           .send({ message: 'Пользователь с данным _id не найден!' }); */
       }
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch(next);
 };
@@ -157,7 +157,7 @@ const avatarUpdate = (req, res, next) => {
 };
 
 module.exports = {
-  getUser,
+  getUserById,
   createUser,
   getUsers,
   profileUpdate,

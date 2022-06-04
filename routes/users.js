@@ -1,7 +1,7 @@
 const { celebrate, Joi } = require('celebrate');
 const router = require('express').Router();
 const {
-  // getUser,
+  getUserById,
   // createUser,
   getUsers,
   profileUpdate,
@@ -10,8 +10,6 @@ const {
 } = require('../controllers/users');
 /* const User = require('../models/User');
 const { isAuthorized } = require('../middlewares/auth'); */
-
-// router.get('/:id', /* isAuthorized,  */getUser);
 
 // router.post('', createUser);
 
@@ -27,9 +25,16 @@ router.patch('/me', celebrate({
 // роут для получения информации о пользователе
 router.get('/me', getProfile);
 
+router.get('/:userId', celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().length(24).hex(),
+  }),
+}), getUserById);
+
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required()
+      .pattern(/^https?:\/\/(w{3}\.)?[\w]*\.ru\/[-._~:/?#[]@!$&'()*\+,;=]*#?$/),
   }),
 }), avatarUpdate);
 
