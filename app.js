@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 // const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
+const NotFoundError = require('./errors/not-found-err');
+const { validateURL } = require('./middlewares/url_validator');
 const { userRouter } = require('./routes/users');
 const { cardsRouter } = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
@@ -41,13 +43,17 @@ app.post('/signup', celebrate({
     about: Joi.string().min(2).max(30),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
-    avatar: Joi.string()
-      .pattern(/^https?:\/\/(w{3}\.)?[\w]*\.ru\/[-._~:/?#[]@!$&'()*\+,;=]*#?$/),
+    avatar: Joi.string().custom(validateURL),
+    // .pattern(/^https?:\/\/(w{3}\.)?[\w]*\.ru\/[-._~:/?#[]@!$&'()*\+,;=]*#?$/),
   }),
 }), createUser);
 // обработчики ошибок
+app.use('*', isAuthorized, (req, res, next) => {
+  next(new NotFoundError('Запрашиваемая страница не найдена'));
+});
+
 app.use(errors()); // обработчик ошибок celebrate
-app.use('*', (req, res) => res.status(404).send({ message: 'Запрашиваемая страница не найдена' }));
+
 // мидлвэр для централизованной обработки ошибок
 
 // eslint-disable-next-line no-unused-vars

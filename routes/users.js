@@ -1,5 +1,7 @@
 const { celebrate, Joi } = require('celebrate');
 const router = require('express').Router();
+const { validateURL } = require('../middlewares/url_validator');
+
 const {
   getUserById,
   // createUser,
@@ -33,8 +35,8 @@ router.get('/:userId', celebrate({
 
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required()
-      .pattern(/^https?:\/\/(w{3}\.)?[\w]*\.ru\/[-._~:/?#[]@!$&'()*\+,;=]*#?$/),
+    avatar: Joi.string().required().custom(validateURL),
+  // pattern(/^https?:\/\/(w{3}\.)?[\w]*\.ru\/[-._~:/?#[]@!$&'()*\+,;=]*#?$/)
   }),
 }), avatarUpdate);
 

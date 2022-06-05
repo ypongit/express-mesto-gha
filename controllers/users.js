@@ -62,14 +62,17 @@ const createUser = (req, res, next) => {
 
       // eslint-disable-next-line consistent-return
       .catch((err) => {
-        if (/* err.name === 'MongoServerError'  && */ err.code === MONGO_DUPLICATE_KEY_CODE) {
-          throw new DuplicateError('Пользователь с таким email уже существует!');
+        if (err.name === 'MongoServerError' && err.code === MONGO_DUPLICATE_KEY_CODE) {
+          next(new DuplicateError('Пользователь с таким email уже существует!'));
           // return res.status(409).send({ message: 'Такой емейл занят!' });
         }
-        next(err);
+        if (err.name === 'ValidationError') {
+          next(new ValidationError(err.message));
+        } else {
+          next(err);
+        }
         // return res.status(DefaultError).send({ message: 'Server error' });
-      }))
-    .catch(next);
+      }));
 };
 
 const login = (req, res, next) => {
@@ -110,13 +113,11 @@ const profileUpdate = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError('переданы некорректные данные в методы обновления пользователя');
-        // return res.status(ValidationError)
-        // .send({ message: 'переданы некорректные данные в методы обновления пользователя' });
+        next(new ValidationError('переданы некорректные данные в методы обновления пользователя'));
+      } else {
+        next(err);
       }
-      // return res.status(DefaultError).send({ message: 'Server error' });
-    })
-    .catch(next);
+    });
 };
 
 // контроллер для получения информации о пользователе. Роут: get('/me', getProfile);
@@ -149,11 +150,12 @@ const avatarUpdate = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError('переданы некорректные данные в методы обновления аватара');
+        next(new ValidationError('переданы некорректные данные в методы обновления аватара'));
       // return res.status(DefaultError).send({ message: 'Server error' });
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 module.exports = {

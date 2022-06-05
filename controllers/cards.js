@@ -5,7 +5,7 @@ const NotFoundError = 404; // карточка или пользователь �
 const DefaultError = 500; // ошибка по-умолчанию. */
 const NotFoundError = require('../errors/not-found-err');
 const ValidationError = require('../errors/validation-err');
-// const ForbiddenError = require('../errors/forbidden-err');
+const ForbiddenError = require('../errors/forbidden-err');
 /* const {
   ValidationError,
   NotFoundError,
@@ -36,26 +36,27 @@ const createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new ValidationError('Переданы некорректные данные в методы создания карточки');
+        next(new ValidationError('Переданы некорректные данные в методы создания карточки'));
         // return res.status(ValidationError).send({ message: 'некорректные данные карточки' });
+      } else {
+        next(err);
       }
-    })
-    .catch(next);
+    });
 };
 
 const removeCard = (req, res, next) => {
   // console.log('removeCard req.params -> ', req.params);
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('карточка не найдена');
+        throw new NotFoundError('карточка по данному id не найдена');
         // return res.status(NotFoundError).send({ message: 'карточка не найдена' });
       }
       if (String(card.owner) !== req.user._id) {
-        // throw new ForbiddenError('Чужую карточку удалить низя!');
-        return res.status(403).send({ message: 'карточка не найдена' });
+        throw new ForbiddenError('Чужую карточку удалить нельзя!');
       }
-      return res.send({ data: card });
+      return Card.deleteOne({ _id: card._id })
+        .then(() => res.status(200).send({ message: 'Карточка удалена' }));
     })
     .catch(next);
 };
